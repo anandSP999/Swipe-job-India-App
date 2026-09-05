@@ -64,10 +64,14 @@ fun DocumentViewerDialog(
     val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
     val formattedDate = dateFormat.format(Date(document.uploadedAt))
 
-    val isImage = document.uriOrUrl.endsWith(".jpg", true) ||
+    val isImage = document.type.contains("AADHAAR", true) ||
+            document.type.contains("PHOTO", true) ||
+            document.uriOrUrl.endsWith(".jpg", true) ||
             document.uriOrUrl.endsWith(".jpeg", true) ||
             document.uriOrUrl.endsWith(".png", true) ||
-            document.uriOrUrl.contains("image")
+            document.uriOrUrl.endsWith(".webp", true) ||
+            document.uriOrUrl.contains("image", true) ||
+            document.uriOrUrl.startsWith("data:image")
 
     Dialog(
         onDismissRequest = onDismiss,

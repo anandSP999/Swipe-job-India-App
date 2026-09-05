@@ -420,10 +420,16 @@ fun ProfileScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    val hasResume = !profile?.resumeFileName.isNullOrBlank() || profile?.uploadedDocuments?.any { it.type == "RESUME" } == true
+                    val hasAadhaarF = !profile?.aadhaarFUrl.isNullOrBlank() || profile?.uploadedDocuments?.any { it.type == "AADHAAR_FRONT" } == true
+                    val hasAadhaarB = !profile?.aadhaarBUrl.isNullOrBlank() || profile?.uploadedDocuments?.any { it.type == "AADHAAR_BACK" } == true
+                    val hasCertificate = !profile?.certificates.isNullOrBlank() || profile?.uploadedDocuments?.any { it.type == "CERTIFICATE" } == true
+
                     Text(
-                        text = "Upload your CV/Resume & verification documents to unlock fast hiring",
+                        text = if (hasResume && hasAadhaarF) "✓ Your core documents are verified & loaded" else "Upload your CV/Resume & verification documents to unlock fast hiring",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        color = if (hasResume && hasAadhaarF) SwipeSelectedGreen else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        fontWeight = if (hasResume && hasAadhaarF) FontWeight.SemiBold else FontWeight.Normal
                     )
 
                     // Quick Upload Action Buttons
@@ -435,11 +441,21 @@ fun ProfileScreen(
                             onClick = { resumePickerLauncher.launch("application/pdf") },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SwipePrimary)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (hasResume) SwipeSelectedGreen else SwipePrimary
+                            )
                         ) {
-                            Icon(imageVector = Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(
+                                imageVector = if (hasResume) Icons.Default.CheckCircle else Icons.Default.UploadFile,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Upload Resume", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = if (hasResume) "Resume ✓" else "Upload Resume",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
 
                         OutlinedButton(
@@ -451,9 +467,19 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Icon(imageVector = Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(
+                                imageVector = if (hasAadhaarF) Icons.Default.CheckCircle else Icons.Default.UploadFile,
+                                contentDescription = null,
+                                tint = if (hasAadhaarF) SwipeSelectedGreen else SwipePrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Aadhaar Card", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = if (hasAadhaarF) "Aadhaar Front ✓" else "Aadhaar Front",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (hasAadhaarF) SwipeSelectedGreen else MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
 
@@ -470,7 +496,19 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(text = "Aadhaar Back", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            Icon(
+                                imageVector = if (hasAadhaarB) Icons.Default.CheckCircle else Icons.Default.UploadFile,
+                                contentDescription = null,
+                                tint = if (hasAadhaarB) SwipeSelectedGreen else SwipePrimary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (hasAadhaarB) "Aadhaar Back ✓" else "Aadhaar Back",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (hasAadhaarB) SwipeSelectedGreen else MaterialTheme.colorScheme.onSurface
+                            )
                         }
 
                         OutlinedButton(
@@ -478,7 +516,19 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(text = "Certificate/Degree", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            Icon(
+                                imageVector = if (hasCertificate) Icons.Default.CheckCircle else Icons.Default.UploadFile,
+                                contentDescription = null,
+                                tint = if (hasCertificate) SwipeSelectedGreen else SwipePrimary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (hasCertificate) "Certificate ✓" else "Certificate/Degree",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (hasCertificate) SwipeSelectedGreen else MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
 
