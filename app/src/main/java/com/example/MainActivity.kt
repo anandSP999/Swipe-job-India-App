@@ -1,7 +1,9 @@
 package com.example
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,8 +13,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -102,16 +108,56 @@ import com.example.ui.theme.SwipeSelectedGreen
 import com.example.ui.theme.SwipeWarningAmber
 
 class MainActivity : ComponentActivity() {
+
+    private var activeViewModel: SwipeJobsViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val viewModel: SwipeJobsViewModel = viewModel()
+            activeViewModel = viewModel
             val uiState by viewModel.uiState.collectAsState()
+
+            LaunchedEffect(intent) {
+                handleIncomingDeepLink(intent, viewModel)
+            }
 
             SwipeJobsTheme(darkTheme = uiState.isDarkTheme) {
                 SwipeJobsApp(viewModel = viewModel, uiState = uiState)
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        activeViewModel?.let { handleIncomingDeepLink(intent, it) }
+    }
+
+    private fun handleIncomingDeepLink(intent: Intent?, vm: SwipeJobsViewModel) {
+        val uri: Uri = intent?.data ?: return
+        // Formats:
+        // https://ais-pre-jbmiw3g2ezswn7gcdlmgyn-637005264324.asia-southeast1.run.app/job/{jobId}
+        // https://swipejobs.in/job/{jobId}
+        // swipejobs://job/{jobId}
+        // or ?jobId={jobId}
+        val queryJobId = uri.getQueryParameter("jobId")
+        val pathJobId = if (uri.pathSegments.isNotEmpty()) {
+            val segments = uri.pathSegments
+            val jobIndex = segments.indexOf("job")
+            if (jobIndex != -1 && jobIndex + 1 < segments.size) {
+                segments[jobIndex + 1]
+            } else {
+                uri.lastPathSegment
+            }
+        } else if (uri.scheme == "swipejobs") {
+            if (uri.host != null && uri.host != "job") uri.host else uri.lastPathSegment
+        } else null
+
+        val targetJobId = queryJobId ?: pathJobId
+        if (!targetJobId.isNullOrBlank()) {
+            vm.openJobById(targetJobId)
         }
     }
 }
@@ -341,10 +387,25 @@ fun SwipeJobsApp(
                     onSelectSavedAccount = { acc -> viewModel.switchAccount(acc) }
                 )
             } else {
-                // Main Authenticated Screens with smooth transition
+                // Main Authenticated Screens with smooth iOS-style spring transition
                 AnimatedContent(
                     targetState = uiState.selectedTab,
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    transitionSpec = {
+                        val direction = if (targetState.ordinal > initialState.ordinal) 1 else -1
+                        (slideInHorizontally(
+                            animationSpec = spring(
+                                dampingRatio = 0.85f,
+                                stiffness = 380f
+                            ),
+                            initialOffsetX = { fullWidth -> fullWidth * direction / 3 }
+                        ) + fadeIn(animationSpec = tween(220))) togetherWith (slideOutHorizontally(
+                            animationSpec = spring(
+                                dampingRatio = 0.85f,
+                                stiffness = 380f
+                            ),
+                            targetOffsetX = { fullWidth -> -fullWidth * direction / 3 }
+                        ) + fadeOut(animationSpec = tween(180)))
+                    },
                     label = "tab_animation"
                 ) { tab ->
                     when (tab) {
@@ -356,6 +417,9 @@ fun SwipeJobsApp(
                             locationFilter = uiState.locationFilter,
                             isListView = uiState.isListView,
                             lastSwipedJob = uiState.lastSwipedLeftJob,
+                            displayedLimit = uiState.displayedJobsLimit,
+                            isLoadingMore = uiState.isLoadingMore,
+                            onLoadMore = { viewModel.loadMoreJobs() },
                             onSearchQueryChange = { viewModel.onSearchQueryChanged(it) },
                             onCategoryChange = { viewModel.onCategoryFilterChanged(it) },
                             onLocationFilterChange = { viewModel.setLocationFilter(it) },

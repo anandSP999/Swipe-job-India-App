@@ -18,12 +18,35 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Universal Web Links (ais-pre, ais-dev, swipejobs.in) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="ais-pre-jbmiw3g2ezswn7gcdlmgyn-637005264324.asia-southeast1.run.app" />
+                <data android:host="ais-dev-jbmiw3g2ezswn7gcdlmgyn-637005264324.asia-southeast1.run.app" />
+                <data android:host="swipejobs.in" />
+                <data android:host="swipejobs-a5317.web.app" />
+                <data android:pathPrefix="/job" />
+            </intent-filter>
+
+            <!-- Custom URI Scheme: swipejobs://job/{id} -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="swipejobs" />
             </intent-filter>
         </activity>
     </application>

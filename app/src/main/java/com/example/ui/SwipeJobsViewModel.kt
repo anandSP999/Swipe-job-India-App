@@ -63,6 +63,8 @@ data class SwipeJobsUiState(
     val selectedJobTypes: Set<String> = setOf("full-time", "part-time", "remote", "hybrid"),
     val locationFilter: LocationFilter = LocationFilter.NEARBY,
     val genderFilter: String = "All",
+    val displayedJobsLimit: Int = 10,
+    val isLoadingMore: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null
@@ -548,6 +550,41 @@ class SwipeJobsViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun openJobDetails(job: Job) {
         _uiState.update { it.copy(selectedJobForModal = job) }
+    }
+
+    fun openJobById(jobId: String) {
+        if (jobId.isBlank()) return
+        val existing = _uiState.value.allJobs.find { it.id == jobId }
+            ?: _uiState.value.filteredJobs.find { it.id == jobId }
+            ?: repository.getStarterJobs().find { it.id == jobId }
+
+        if (existing != null) {
+            _uiState.update { it.copy(selectedJobForModal = existing) }
+        } else {
+            viewModelScope.launch {
+                val fetched = repository.getJobById(jobId)
+                if (fetched != null) {
+                    _uiState.update { it.copy(selectedJobForModal = fetched) }
+                }
+            }
+        }
+    }
+
+    fun loadMoreJobs() {
+        val currentLimit = _uiState.value.displayedJobsLimit
+        val totalFiltered = _uiState.value.filteredJobs.size
+        if (currentLimit < totalFiltered && !_uiState.value.isLoadingMore) {
+            _uiState.update { it.copy(isLoadingMore = true) }
+            viewModelScope.launch {
+                kotlinx.coroutines.delay(250) // Micro-chunk smooth loading effect
+                _uiState.update {
+                    it.copy(
+                        displayedJobsLimit = (currentLimit + 10).coerceAtMost(totalFiltered),
+                        isLoadingMore = false
+                    )
+                }
+            }
+        }
     }
 
     fun closeJobDetails() {

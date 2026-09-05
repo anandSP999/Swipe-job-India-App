@@ -45,8 +45,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,6 +77,9 @@ fun JobsSwipeScreen(
     locationFilter: LocationFilter,
     isListView: Boolean,
     lastSwipedJob: Job?,
+    displayedLimit: Int = 10,
+    isLoadingMore: Boolean = false,
+    onLoadMore: () -> Unit = {},
     onSearchQueryChange: (String) -> Unit,
     onCategoryChange: (String) -> Unit,
     onLocationFilterChange: (LocationFilter) -> Unit,
@@ -261,20 +267,66 @@ fun JobsSwipeScreen(
                     }
                 }
             } else if (isListView) {
-                // List View
+                // Progressive Lazy List View
+                val pagedJobs = jobs.take(displayedLimit)
+                val hasMore = jobs.size > displayedLimit
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(jobs, key = { it.id }) { job ->
+                    items(pagedJobs, key = { it.id }) { job ->
                         JobListItemCard(
                             job = job,
                             onViewDetails = { onViewDetails(job) },
                             onApply = { onSwipeApply(job) },
                             onShare = { onShareJob(job) }
                         )
+                    }
+
+                    if (hasMore) {
+                        item {
+                            LaunchedEffect(displayedLimit) {
+                                onLoadMore()
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (isLoadingMore) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(18.dp),
+                                            strokeWidth = 2.dp,
+                                            color = SwipePrimary
+                                        )
+                                        Text(
+                                            text = "Loading next vacancies smoothly...",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        )
+                                    }
+                                } else {
+                                    OutlinedButton(
+                                        onClick = onLoadMore,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Text(
+                                            text = "Load More Openings (${jobs.size - pagedJobs.size} more)",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             } else {

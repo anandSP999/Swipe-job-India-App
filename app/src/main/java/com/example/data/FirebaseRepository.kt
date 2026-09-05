@@ -249,6 +249,46 @@ class FirebaseRepository(private val context: Context) {
         db.collection("candidates").document(profile.uid).set(profile).await()
     }
 
+    suspend fun getJobById(jobId: String): Job? {
+        ensureFirebaseInitialized()
+        // Check starter jobs first
+        val starter = getStarterJobs().find { it.id == jobId }
+        if (starter != null) return starter
+
+        return try {
+            val doc = db.collection("jobs").document(jobId).get().await()
+            if (doc.exists()) {
+                val data = doc.data ?: return null
+                Job(
+                    id = doc.id,
+                    title = data["title"] as? String ?: "Job Vacancy",
+                    companyName = data["companyName"] as? String ?: (data["companyEmail"] as? String)?.substringBefore("@")?.uppercase(Locale.ROOT) ?: "Top Enterprise",
+                    companyEmail = data["companyEmail"] as? String ?: "",
+                    location = data["location"] as? String ?: "Pan India",
+                    salary = data["salary"] as? String ?: "₹25,000 - ₹45,000 / mo",
+                    vacancy = (data["vacancy"] ?: "3").toString(),
+                    role = data["role"] as? String ?: "Associate",
+                    gender = data["gender"] as? String ?: "Any",
+                    edu = data["edu"] as? String ?: "Graduate / Diploma",
+                    working = data["working"] as? String ?: "9:30 AM - 6:30 PM",
+                    hiringFor = data["hiringFor"] as? String ?: "Direct Payroll",
+                    benefits = data["benefits"] as? String ?: "PF + Medical + Performance Incentives",
+                    teamsize = (data["teamsize"] ?: "50+").toString(),
+                    interviewer = data["interviewer"] as? String ?: "HR Operations Lead",
+                    desc = data["desc"] as? String ?: "Exciting opportunity to build your career with competitive compensation and verified payroll.",
+                    category = data["category"] as? String ?: "Other",
+                    jobType = data["jobType"] as? String ?: "full-time",
+                    isCampaignActive = (data["isCampaignActive"] as? Boolean) ?: true,
+                    referralReward = (data["referralReward"] as? Number)?.toDouble() ?: 500.0,
+                    applyCount = (data["applyCount"] as? Number)?.toInt() ?: 12,
+                    status = data["status"] as? String ?: "Approved"
+                )
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun observeApplications(uid: String): Flow<List<ApplicationRecord>> = callbackFlow {
         ensureFirebaseInitialized()
         if (uid.isEmpty()) {

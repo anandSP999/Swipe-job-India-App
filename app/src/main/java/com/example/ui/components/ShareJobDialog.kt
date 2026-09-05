@@ -55,8 +55,9 @@ fun ShareJobDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    val shareLink = "https://swipejobs-a5317.web.app/?jobId=${job.id}&ref=$referralCode"
-    val shareText = "🚀 Hey! I found this awesome ${job.title} vacancy at ${job.companyName} paying ${job.salary}! Apply using my Refer Code: *$referralCode* via SwipeJobs India:\n$shareLink"
+    val liveDomain = "https://ais-pre-jbmiw3g2ezswn7gcdlmgyn-637005264324.asia-southeast1.run.app"
+    val shareLink = "$liveDomain/job/${job.id}?ref=$referralCode"
+    val shareText = "🔥 Vacancy Alert: *${job.title}* at *${job.companyName}*\n💰 Salary: ${job.salary}\n📍 Location: ${job.location}\n\n👉 View & 1-Tap Apply (App / Web):\n$shareLink\n\n(Opens directly in SwipeJobs app if installed, or in web browser / iPhone with full job details!)"
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
