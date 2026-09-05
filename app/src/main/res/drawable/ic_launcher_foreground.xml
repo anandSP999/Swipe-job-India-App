@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Briefcase Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M33,45 C30.8,45 29,46.8 29,49 L29,76 C29,78.2 30.8,80 33,80 L75,80 C77.2,80 79,78.2 79,76 L79,49 C79,46.8 77.2,45 75,45 L65,45 L65,41 C65,37.7 62.3,35 59,35 L49,35 C45.7,35 43,37.7 43,41 L43,45 L33,45 Z M47,41 C47,39.9 47.9,39 49,39 L59,39 C60.1,39 61,39.9 61,41 L61,45 L47,45 L47,41 Z" />
+
+    <!-- Flame / Swipe Symbol inside Briefcase -->
+    <path
+        android:fillColor="#FF5252"
+        android:pathData="M54,50 C54,50 63,56 63,64 C63,68.9 59,73 54,73 C49,73 45,68.9 45,64 C45,58.5 50.5,53.5 54,50 Z" />
+
+    <!-- Inner Golden Core Flame -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M54,59 C54,59 58,62.5 58,66 C58,68.2 56.2,70 54,70 C51.8,70 50,68.2 50,66 C50,63.5 52.5,61 54,59 Z" />
+
+    <!-- Speed / Swipe swoosh lines -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,41 L40,41 L37,43 L29,43 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M68,41 L76,41 L79,43 L71,43 Z" />
+</vector>

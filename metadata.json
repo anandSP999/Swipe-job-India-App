@@ -1,0 +1,6 @@
+{
+  "name": "SwipeJobs India",
+  "description": "Swipe to apply for top jobs in India, track application status, refer friends, and manage your career profile.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
