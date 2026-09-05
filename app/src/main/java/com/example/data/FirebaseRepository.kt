@@ -181,6 +181,23 @@ class FirebaseRepository(private val context: Context) {
                 .addSnapshotListener { snapshot, _ ->
                     if (snapshot != null && snapshot.exists()) {
                         val d = snapshot.data ?: return@addSnapshotListener
+                        val rawDocs = d["uploadedDocuments"] as? List<Map<String, Any>> ?: emptyList()
+                        val docs = rawDocs.mapNotNull { docMap ->
+                            try {
+                                UploadedDocument(
+                                    id = docMap["id"] as? String ?: java.util.UUID.randomUUID().toString(),
+                                    name = docMap["name"] as? String ?: "",
+                                    type = docMap["type"] as? String ?: "RESUME",
+                                    uriOrUrl = docMap["uriOrUrl"] as? String ?: "",
+                                    uploadedAt = (docMap["uploadedAt"] as? Number)?.toLong() ?: System.currentTimeMillis(),
+                                    fileSize = docMap["fileSize"] as? String ?: "1.0 MB",
+                                    isVerified = docMap["isVerified"] as? Boolean ?: true
+                                )
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+
                         val profile = CandidateProfile(
                             uid = uid,
                             name = d["name"] as? String ?: "",
@@ -203,13 +220,15 @@ class FirebaseRepository(private val context: Context) {
                             certificates = d["certificates"] as? String ?: "",
                             panCard = d["panCard"] as? String ?: "",
                             resumeUrl = d["resumeUrl"] as? String ?: "",
+                            resumeFileName = d["resumeFileName"] as? String ?: "",
                             photoUrl = d["photoUrl"] as? String ?: "",
                             aadhaarFUrl = d["aadhaarFUrl"] as? String ?: "",
                             aadhaarBUrl = d["aadhaarBUrl"] as? String ?: "",
                             referralCode = d["referralCode"] as? String ?: generateReferralCode(d["name"] as? String ?: "User", "2000"),
                             walletBalance = (d["walletBalance"] as? Number)?.toDouble() ?: 0.0,
                             totalReferrals = (d["totalReferrals"] as? Number)?.toInt() ?: 0,
-                            profileComplete = d["profileComplete"] as? Boolean ?: false
+                            profileComplete = d["profileComplete"] as? Boolean ?: false,
+                            uploadedDocuments = docs
                         )
                         trySend(profile)
                     } else {

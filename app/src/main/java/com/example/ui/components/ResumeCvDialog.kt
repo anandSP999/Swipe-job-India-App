@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,16 +18,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,19 +42,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import com.example.data.CandidateProfile
 import com.example.ui.theme.SwipePrimary
+import com.example.ui.theme.SwipeSelectedGreen
+import com.example.ui.theme.SwipeWarningAmber
 
 @Composable
 fun ResumeCvDialog(
     profile: CandidateProfile?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDownloadAiResume: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -84,15 +99,67 @@ fun ResumeCvDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "DIGITAL CV PREVIEW",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = SwipePrimary,
-                            letterSpacing = 1.sp
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = SwipePrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "AI DIGITAL CV PREVIEW",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = SwipePrimary,
+                                letterSpacing = 1.sp
+                            )
+                        }
                         IconButton(onClick = onDismiss) {
                             Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = Color.Black)
+                        }
+                    }
+
+                    // AI Resume Download Card Action
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = SwipePrimary.copy(alpha = 0.08f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, SwipePrimary.copy(alpha = 0.3f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "AI Resume Ready",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SwipePrimary
+                                )
+                                Text(
+                                    text = "Export ATS-compliant digital CV",
+                                    fontSize = 11.sp,
+                                    color = Color.DarkGray
+                                )
+                            }
+
+                            Button(
+                                onClick = onDownloadAiResume,
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SwipePrimary),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Icon(imageVector = Icons.Default.Download, contentDescription = "Download", modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(text = "Download AI Resume", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
 
@@ -143,12 +210,23 @@ fun ResumeCvDialog(
                                 .border(2.dp, SwipePrimary, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = profile?.name?.firstOrNull()?.uppercase() ?: "C",
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = SwipePrimary
-                            )
+                            if (!profile?.photoUrl.isNullOrEmpty()) {
+                                AsyncImage(
+                                    model = profile?.photoUrl,
+                                    contentDescription = "Profile Photo",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(CircleShape)
+                                )
+                            } else {
+                                Text(
+                                    text = profile?.name?.firstOrNull()?.uppercase() ?: "C",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SwipePrimary
+                                )
+                            }
                         }
                     }
 
@@ -211,8 +289,42 @@ fun ResumeCvDialog(
                         text = "Refer Code: ${profile?.referralCode ?: "SWIPE01"} | PAN: ${profile?.panCard?.ifEmpty { "Verified Candidate" } ?: "Verified"}",
                         fontSize = 13.sp,
                         color = Color(0xFF333333),
-                        modifier = Modifier.padding(start = 6.dp, top = 4.dp)
+                        modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 16.dp)
                     )
+
+                    // Bottom Action Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_SUBJECT, "SwipeJobs Digital CV - ${profile?.name}")
+                                    putExtra(Intent.EXTRA_TEXT, "Candidate Profile: ${profile?.name}\nRole: ${profile?.category}\nPhone: ${profile?.mobile}\nEducation: ${profile?.education}\nSkills: ${profile?.skills}")
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, "Share CV"))
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Share CV")
+                        }
+
+                        Button(
+                            onClick = onDownloadAiResume,
+                            modifier = Modifier.weight(1.3f),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SwipePrimary)
+                        ) {
+                            Icon(imageVector = Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Download AI Resume")
+                        }
+                    }
                 }
             }
         }

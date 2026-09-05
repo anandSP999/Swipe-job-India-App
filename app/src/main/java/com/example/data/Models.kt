@@ -28,6 +28,16 @@ data class Job(
     val createdAt: Long = System.currentTimeMillis()
 )
 
+data class UploadedDocument(
+    val id: String = UUID.randomUUID().toString(),
+    val name: String = "",
+    val type: String = "RESUME", // RESUME, AADHAAR_FRONT, AADHAAR_BACK, CERTIFICATE, OTHER
+    val uriOrUrl: String = "",
+    val uploadedAt: Long = System.currentTimeMillis(),
+    val fileSize: String = "1.2 MB",
+    val isVerified: Boolean = true
+)
+
 data class CandidateProfile(
     val uid: String = "",
     val name: String = "",
@@ -51,13 +61,15 @@ data class CandidateProfile(
     val certificates: String = "",
     val panCard: String = "",
     val resumeUrl: String = "",
+    val resumeFileName: String = "",
     val photoUrl: String = "",
     val aadhaarFUrl: String = "",
     val aadhaarBUrl: String = "",
     val referralCode: String = "",
     val walletBalance: Double = 0.0,
     val totalReferrals: Int = 0,
-    val profileComplete: Boolean = false
+    val profileComplete: Boolean = false,
+    val uploadedDocuments: List<UploadedDocument> = emptyList()
 )
 
 data class ApplicationRecord(

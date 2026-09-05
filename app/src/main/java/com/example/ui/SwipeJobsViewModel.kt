@@ -54,6 +54,8 @@ data class SwipeJobsUiState(
     val showAccountSwitchDialog: Boolean = false,
     val showNotificationsDialog: Boolean = false,
     val showCompleteProfilePrompt: Boolean = false,
+    val showProfilePhotoViewer: Boolean = false,
+    val viewingDocument: com.example.data.UploadedDocument? = null,
     val notifications: List<AppNotification> = emptyList(),
     val unreadNotificationsCount: Int = 0,
     val searchQuery: String = "",
@@ -590,6 +592,157 @@ class SwipeJobsViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun closeNotificationsDialog() {
         _uiState.update { it.copy(showNotificationsDialog = false) }
+    }
+
+    fun openProfilePhotoViewer() {
+        _uiState.update { it.copy(showProfilePhotoViewer = true) }
+    }
+
+    fun closeProfilePhotoViewer() {
+        _uiState.update { it.copy(showProfilePhotoViewer = false) }
+    }
+
+    fun openDocumentViewer(doc: com.example.data.UploadedDocument) {
+        _uiState.update { it.copy(viewingDocument = doc) }
+    }
+
+    fun closeDocumentViewer() {
+        _uiState.update { it.copy(viewingDocument = null) }
+    }
+
+    fun updateProfilePhoto(uri: String) {
+        val current = _uiState.value.candidateProfile ?: return
+        val updated = current.copy(photoUrl = uri)
+        updateProfile(updated)
+        // Also update saved accounts
+        val uid = _uiState.value.currentUserId ?: return
+        val accounts = accountStore.getSavedAccounts().map {
+            if (it.uid == uid) it.copy(photoUrl = uri) else it
+        }
+        _uiState.update {
+            it.copy(
+                candidateProfile = updated,
+                savedAccounts = accounts,
+                successMessage = "Profile photo updated successfully!"
+            )
+        }
+    }
+
+    fun removeProfilePhoto() {
+        val current = _uiState.value.candidateProfile ?: return
+        val updated = current.copy(photoUrl = "")
+        updateProfile(updated)
+        val uid = _uiState.value.currentUserId ?: return
+        val accounts = accountStore.getSavedAccounts().map {
+            if (it.uid == uid) it.copy(photoUrl = "") else it
+        }
+        _uiState.update {
+            it.copy(
+                candidateProfile = updated,
+                savedAccounts = accounts,
+                successMessage = "Profile photo removed."
+            )
+        }
+    }
+
+    fun uploadDocument(name: String, type: String, uri: String, size: String = "1.2 MB") {
+        val current = _uiState.value.candidateProfile ?: return
+        val newDoc = com.example.data.UploadedDocument(
+            id = java.util.UUID.randomUUID().toString(),
+            name = name,
+            type = type,
+            uriOrUrl = uri,
+            uploadedAt = System.currentTimeMillis(),
+            fileSize = size,
+            isVerified = true
+        )
+        val updatedList = listOf(newDoc) + current.uploadedDocuments
+        val updatedProfile = if (type == "RESUME") {
+            current.copy(
+                uploadedDocuments = updatedList,
+                resumeUrl = uri,
+                resumeFileName = name
+            )
+        } else if (type == "AADHAAR_FRONT") {
+            current.copy(
+                uploadedDocuments = updatedList,
+                aadhaarFUrl = uri
+            )
+        } else if (type == "AADHAAR_BACK") {
+            current.copy(
+                uploadedDocuments = updatedList,
+                aadhaarBUrl = uri
+            )
+        } else {
+            current.copy(uploadedDocuments = updatedList)
+        }
+
+        updateProfile(updatedProfile)
+        _uiState.update {
+            it.copy(
+                candidateProfile = updatedProfile,
+                successMessage = "$name uploaded successfully!"
+            )
+        }
+    }
+
+    fun deleteDocument(docId: String) {
+        val current = _uiState.value.candidateProfile ?: return
+        val updatedList = current.uploadedDocuments.filter { it.id != docId }
+        val updatedProfile = current.copy(uploadedDocuments = updatedList)
+        updateProfile(updatedProfile)
+        _uiState.update {
+            it.copy(
+                candidateProfile = updatedProfile,
+                successMessage = "Document removed."
+            )
+        }
+    }
+
+    fun exportAiResume(context: android.content.Context) {
+        val profile = _uiState.value.candidateProfile ?: return
+        val resumeText = buildString {
+            appendLine("=========================================")
+            appendLine("      SWIPEJOBS INDIA - AI RESUME        ")
+            appendLine("=========================================")
+            appendLine("NAME: ${profile.name.uppercase()}")
+            appendLine("EMAIL: ${profile.email}")
+            appendLine("MOBILE: ${profile.mobile}")
+            appendLine("LOCATION: ${profile.address}, ${profile.city}")
+            appendLine("JOB CATEGORY: ${profile.category}")
+            appendLine("\n--- PROFESSIONAL SUMMARY ---")
+            appendLine("A dedicated and adaptable professional specializing in ${profile.category}. Committed to excellence, continuous learning, and delivering high organizational value.")
+            appendLine("\n--- HIGHEST QUALIFICATION ---")
+            appendLine(profile.education.ifEmpty { "Bachelor's Degree / Diploma" })
+            if (profile.certificates.isNotBlank()) {
+                appendLine("Certifications: ${profile.certificates}")
+            }
+            appendLine("\n--- CORE SKILLS ---")
+            appendLine(profile.skills.ifEmpty { "Communication, Problem Solving, Computer Literacy, Team Collaboration" })
+            appendLine("\n--- WORK EXPERIENCE ---")
+            appendLine(profile.workHistory.ifEmpty { "Fresher - Ready for immediate employment and career advancement." })
+            appendLine("\n--- CANDIDATE DETAILS ---")
+            appendLine("Languages: ${profile.languages.ifEmpty { "English, Hindi" }}")
+            appendLine("Expected CTC: ${profile.expectedSalary.ifEmpty { "Best in Industry" }}")
+            appendLine("Notice Period: ${profile.noticePeriod.ifEmpty { "Immediate" }}")
+            appendLine("PAN / ID: ${profile.panCard.ifEmpty { "Verified" }}")
+            appendLine("Verification ID: ${profile.referralCode}")
+            appendLine("=========================================")
+            appendLine("Generated by SwipeJobs India AI Resume Engine")
+        }
+
+        try {
+            val sendIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(android.content.Intent.EXTRA_SUBJECT, "${profile.name} - AI Resume (SwipeJobs)")
+                putExtra(android.content.Intent.EXTRA_TEXT, resumeText)
+                flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(android.content.Intent.createChooser(sendIntent, "Download / Share AI Resume"))
+            _uiState.update { it.copy(successMessage = "AI Resume ready! Choose an app to download or share.") }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(errorMessage = "Could not share resume: ${e.localizedMessage}") }
+        }
     }
 
     fun closeCompleteProfilePrompt() {

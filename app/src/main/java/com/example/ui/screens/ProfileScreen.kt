@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,15 +23,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Brightness4
 import androidx.compose.material.icons.filled.Brightness7
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.SwitchAccount
+import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -56,12 +65,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.data.CandidateProfile
 import com.example.data.SavedAccount
+import com.example.data.UploadedDocument
 import com.example.ui.theme.SwipePrimary
 import com.example.ui.theme.SwipeRejectRed
 import com.example.ui.theme.SwipeSelectedGreen
@@ -76,6 +88,12 @@ fun ProfileScreen(
     onSaveProfile: (CandidateProfile) -> Unit,
     onOpenSwitchAccount: () -> Unit,
     onOpenCv: () -> Unit,
+    onDownloadAiResume: () -> Unit,
+    onOpenPhotoViewer: () -> Unit,
+    onUpdateProfilePhoto: (String) -> Unit,
+    onUploadDocument: (name: String, type: String, uri: String, size: String) -> Unit,
+    onViewDocument: (UploadedDocument) -> Unit,
+    onDeleteDocument: (String) -> Unit,
     onToggleDarkMode: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -111,6 +129,46 @@ fun ProfileScreen(
         "Other"
     )
 
+    // Photo and Document Pickers
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { onUpdateProfilePhoto(it.toString()) }
+    }
+
+    val resumePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val fileName = "Resume_${name.replace(" ", "_").ifEmpty { "Candidate" }}.pdf"
+            onUploadDocument(fileName, "RESUME", it.toString(), "1.2 MB")
+        }
+    }
+
+    val aadhaarFrontPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            onUploadDocument("Aadhaar_Front.jpg", "AADHAAR_FRONT", it.toString(), "780 KB")
+        }
+    }
+
+    val aadhaarBackPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            onUploadDocument("Aadhaar_Back.jpg", "AADHAAR_BACK", it.toString(), "820 KB")
+        }
+    }
+
+    val certificatePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            onUploadDocument("Education_Certificate.pdf", "CERTIFICATE", it.toString(), "1.5 MB")
+        }
+    }
+
     // Calculate completeness
     val fields = listOf(name, mobile, email, category, age, gender, address, education, expectedSalary, skills)
     val filledCount = fields.count { it.isNotBlank() }
@@ -141,21 +199,63 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            // Round Avatar with Camera Badge & Click to View Shortcut
                             Box(
                                 modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(CircleShape)
-                                    .background(SwipePrimary.copy(alpha = 0.15f))
-                                    .border(2.dp, SwipePrimary, CircleShape),
-                                contentAlignment = Alignment.Center
+                                    .size(62.dp)
+                                    .clickable { onOpenPhotoViewer() }
                             ) {
-                                Text(
-                                    text = name.firstOrNull()?.uppercase() ?: "C",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = SwipePrimary
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clip(CircleShape)
+                                        .background(SwipePrimary.copy(alpha = 0.15f))
+                                        .border(2.5.dp, SwipePrimary, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (!profile?.photoUrl.isNullOrEmpty()) {
+                                        AsyncImage(
+                                            model = profile?.photoUrl,
+                                            contentDescription = "Profile Photo",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(CircleShape)
+                                        )
+                                    } else {
+                                        Text(
+                                            text = name.firstOrNull()?.uppercase() ?: "C",
+                                            fontSize = 26.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SwipePrimary
+                                        )
+                                    }
+                                }
+
+                                // Small Camera Badge
+                                Surface(
+                                    shape = CircleShape,
+                                    color = SwipePrimary,
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                        .align(Alignment.BottomEnd)
+                                        .clickable {
+                                            photoPickerLauncher.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
+                                        }
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Default.CameraAlt,
+                                            contentDescription = "Upload Photo",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(13.dp)
+                                        )
+                                    }
+                                }
                             }
+
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {
                                 Text(
@@ -168,17 +268,27 @@ fun ProfileScreen(
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = SwipePrimary.copy(alpha = 0.1f),
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.padding(top = 4.dp)
                                 ) {
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = SwipePrimary.copy(alpha = 0.1f)
+                                    ) {
+                                        Text(
+                                            text = category,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SwipePrimary,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = category,
+                                        text = "• Tap photo to view",
                                         fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = SwipePrimary,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                     )
                                 }
                             }
@@ -219,6 +329,262 @@ fun ProfileScreen(
                         color = SwipePrimary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // AI Resume Download Action Card
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SwipePrimary.copy(alpha = 0.08f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SwipePrimary.copy(alpha = 0.3f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = SwipePrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "AI Resume Builder",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = SwipePrimary
+                            )
+                        }
+                        Text(
+                            text = "ATS-compliant resume ready for 1-click download",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+
+                    Button(
+                        onClick = onDownloadAiResume,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SwipePrimary),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(text = "Download", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // MY DOCUMENTS & CV UPLOAD SECTION
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "MY DOCUMENTS & UPLOADS",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SwipePrimary,
+                    letterSpacing = 1.sp
+                )
+                Text(
+                    text = "${profile?.uploadedDocuments?.size ?: 0} Uploaded",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Upload your CV/Resume & verification documents to unlock fast hiring",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+
+                    // Quick Upload Action Buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { resumePickerLauncher.launch("application/pdf") },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SwipePrimary)
+                        ) {
+                            Icon(imageVector = Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Upload Resume", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                aadhaarFrontPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Aadhaar Card", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                aadhaarBackPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(text = "Aadhaar Back", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        }
+
+                        OutlinedButton(
+                            onClick = { certificatePickerLauncher.launch("*/*") },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(text = "Certificate/Degree", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+
+                    // Uploaded Documents List
+                    val docs = profile?.uploadedDocuments ?: emptyList()
+                    if (docs.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Uploaded Documents",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        docs.forEach { doc ->
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = SwipePrimary.copy(alpha = 0.12f),
+                                            modifier = Modifier.size(34.dp)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Description,
+                                                    contentDescription = null,
+                                                    tint = SwipePrimary,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Column {
+                                            Text(
+                                                text = doc.name.take(22),
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                maxLines = 1
+                                            )
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Surface(
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    color = SwipeSelectedGreen.copy(alpha = 0.15f)
+                                                ) {
+                                                    Text(
+                                                        text = doc.type.replace("_", " "),
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = SwipeSelectedGreen,
+                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = doc.fileSize,
+                                                    fontSize = 11.sp,
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(
+                                            onClick = { onViewDocument(doc) },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Visibility,
+                                                contentDescription = "View Document",
+                                                tint = SwipePrimary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+
+                                        IconButton(
+                                            onClick = { onDeleteDocument(doc.id) },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete Document",
+                                                tint = SwipeRejectRed,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

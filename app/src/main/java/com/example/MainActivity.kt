@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -81,9 +82,11 @@ import com.example.ui.SwipeJobsUiState
 import com.example.ui.SwipeJobsViewModel
 import com.example.ui.components.AccountSwitchDialog
 import com.example.ui.components.ApplyReferralDialog
+import com.example.ui.components.DocumentViewerDialog
 import com.example.ui.components.JobDetailDialog
 import com.example.ui.components.NotificationDialog
 import com.example.ui.components.OfflineBanner
+import com.example.ui.components.ProfilePhotoViewerDialog
 import com.example.ui.components.ResumeCvDialog
 import com.example.ui.components.ShareJobDialog
 import com.example.ui.screens.ApplicationsScreen
@@ -142,6 +145,12 @@ fun SwipeJobsApp(
             hasNotificationPermission = isGranted
         }
     )
+
+    val photoViewerPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { viewModel.updateProfilePhoto(it.toString()) }
+    }
 
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
@@ -384,6 +393,12 @@ fun SwipeJobsApp(
                             onSaveProfile = { updated -> viewModel.updateProfile(updated) },
                             onOpenSwitchAccount = { viewModel.openAccountSwitchDialog() },
                             onOpenCv = { viewModel.openCvDialog() },
+                            onDownloadAiResume = { viewModel.exportAiResume(context) },
+                            onOpenPhotoViewer = { viewModel.openProfilePhotoViewer() },
+                            onUpdateProfilePhoto = { uri -> viewModel.updateProfilePhoto(uri) },
+                            onUploadDocument = { name, type, uri, size -> viewModel.uploadDocument(name, type, uri, size) },
+                            onViewDocument = { doc -> viewModel.openDocumentViewer(doc) },
+                            onDeleteDocument = { docId -> viewModel.deleteDocument(docId) },
                             onToggleDarkMode = { viewModel.toggleDarkMode() },
                             onLogout = { viewModel.logout() }
                         )
@@ -432,7 +447,8 @@ fun SwipeJobsApp(
     if (uiState.showCvDialog) {
         ResumeCvDialog(
             profile = uiState.candidateProfile,
-            onDismiss = { viewModel.closeCvDialog() }
+            onDismiss = { viewModel.closeCvDialog() },
+            onDownloadAiResume = { viewModel.exportAiResume(context) }
         )
     }
 
@@ -454,6 +470,30 @@ fun SwipeJobsApp(
         NotificationDialog(
             notifications = uiState.notifications,
             onDismiss = { viewModel.closeNotificationsDialog() }
+        )
+    }
+
+    if (uiState.showProfilePhotoViewer) {
+        ProfilePhotoViewerDialog(
+            profile = uiState.candidateProfile,
+            onDismiss = { viewModel.closeProfilePhotoViewer() },
+            onChangePhoto = {
+                photoViewerPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRemovePhoto = { viewModel.removeProfilePhoto() }
+        )
+    }
+
+    uiState.viewingDocument?.let { doc ->
+        DocumentViewerDialog(
+            document = doc,
+            onDismiss = { viewModel.closeDocumentViewer() },
+            onDelete = { docId ->
+                viewModel.deleteDocument(docId)
+                viewModel.closeDocumentViewer()
+            }
         )
     }
 

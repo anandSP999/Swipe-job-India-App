@@ -5,7 +5,9 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -87,33 +90,54 @@ fun JobSwipeCard(
             .offset { IntOffset(offsetX.value.roundToInt(), offsetY.value.roundToInt()) }
             .rotate(rotation)
             .pointerInput(job.id) {
-                detectDragGestures(
-                    onDragEnd = {
-                        coroutineScope.launch {
-                            if (offsetX.value > 250f) {
-                                offsetX.animateTo(1200f, spring(stiffness = Spring.StiffnessMedium))
-                                onSwipedRight()
-                            } else if (offsetX.value < -250f) {
-                                offsetX.animateTo(-1200f, spring(stiffness = Spring.StiffnessMedium))
-                                onSwipedLeft()
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    var dragged = false
+                    val touchSlop = viewConfiguration.touchSlop
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val dragEvent = event.changes.firstOrNull { it.id == down.id } ?: break
+                        if (!dragEvent.pressed) {
+                            // Finger lifted!
+                            if (!dragged) {
+                                onViewDetails()
                             } else {
-                                offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
-                                offsetY.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
+                                coroutineScope.launch {
+                                    if (offsetX.value > 220f) {
+                                        offsetX.animateTo(1200f, spring(stiffness = Spring.StiffnessMedium))
+                                        onSwipedRight()
+                                    } else if (offsetX.value < -220f) {
+                                        offsetX.animateTo(-1200f, spring(stiffness = Spring.StiffnessMedium))
+                                        onSwipedLeft()
+                                    } else {
+                                        offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
+                                        offsetY.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
+                                    }
+                                }
+                            }
+                            break
+                        }
+
+                        val totalOffset = dragEvent.position - down.position
+                        if (!dragged && totalOffset.getDistance() > touchSlop) {
+                            dragged = true
+                        }
+
+                        if (dragged) {
+                            val dragAmount = dragEvent.positionChange()
+                            dragEvent.consume()
+                            coroutineScope.launch {
+                                offsetX.snapTo(offsetX.value + dragAmount.x)
+                                offsetY.snapTo(offsetY.value + dragAmount.y * 0.4f)
                             }
                         }
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        coroutineScope.launch {
-                            offsetX.snapTo(offsetX.value + dragAmount.x)
-                            offsetY.snapTo(offsetY.value + dragAmount.y * 0.4f)
-                        }
                     }
-                )
+                }
             }
             .testTag("job_card_${job.id}")
     ) {
         Card(
+            onClick = onViewDetails,
             modifier = Modifier
                 .fillMaxSize()
                 .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(24.dp)),
