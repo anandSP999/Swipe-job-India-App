@@ -6,7 +6,7 @@ Swipe-to-apply job portal app for blue-collar, service, delivery, and front-line
 
 You can download and install the Android app directly on your phone:
 
-- **[Click here to download SwipeJobs-India.apk](./release/SwipeJobs-India.apk?raw=true)**
+- **[Click here to download SwipeJobs-India.apk](https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/SwipeJobsIndia.apk)**
 
 ### How to Install:
 1. Download the `SwipeJobs-India.apk` file to your Android smartphone.
