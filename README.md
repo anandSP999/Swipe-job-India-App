@@ -19,6 +19,8 @@ You can download and install the Android app directly on your phone:
 
 ## 📸 App Screenshots
 
+  ## 📸 App Screenshots
+
 <table>
   <tr>
     <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 1"></a></td>
