@@ -16,27 +16,23 @@ You can download and install the Android app directly on your phone:
 
 ---
 
+
 ## 📸 App Screenshots
 
-<div align="center">
+<table>
+  <tr>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 1"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-00-59-816_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-00-59-816_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 2"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-40-922_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-40-922_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 3"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-11-958_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-11-958_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 4"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-56-43-828_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-56-43-828_com.aistudio.swipejobs.india.jpg" width="270" alt="Screenshot 5"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-55-13-122_com.aistudio.swipejobs.india-edit.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-55-13-122_com.aistudio.swipejobs.india-edit.jpg" width="270" alt="Screenshot 6"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-54-48-862_com.aistudio.swipejobs.india-edit.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-54-48-862_com.aistudio.swipejobs.india-edit.jpg" width="270" alt="Screenshot 7"></a></td>
+    <td><a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/IMG_20261019_200009.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/IMG_20261019_200009.jpg" width="270" alt="Screenshot 8"></a></td>
+  </tr>
+</table>
 
-<div style="overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding: 12px 0; -webkit-overflow-scrolling: touch;">
-
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg" width="270" alt="SwipeJobs India – Screenshot 1"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-00-59-816_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-00-59-816_com.aistudio.swipejobs.india.jpg" width="270" alt="SwipeJobs India – Screenshot 2"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-40-922_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-40-922_com.aistudio.swipejobs.india.jpg" width="270" alt="SwipeJobs India – Screenshot 3"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-11-958_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-58-11-958_com.aistudio.swipejobs.india.jpg" width="270" alt="SwipeJobs India – Screenshot 4"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-56-43-828_com.aistudio.swipejobs.india.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-56-43-828_com.aistudio.swipejobs.india.jpg" width="270" alt="SwipeJobs India – Screenshot 5"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-55-13-122_com.aistudio.swipejobs.india-edit.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-55-13-122_com.aistudio.swipejobs.india-edit.jpg" width="270" alt="SwipeJobs India – Screenshot 6"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-54-48-862_com.aistudio.swipejobs.india-edit.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-54-48-862_com.aistudio.swipejobs.india-edit.jpg" width="270" alt="SwipeJobs India – Screenshot 7"></a>
-<a href="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/IMG_20261019_200009.jpg"><img src="https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/24f05495e23e0145437d15e52ae62f0ba83c1b58/Swipe%20job%20India%20-%20App/IMG_20261019_200009.jpg" width="270" alt="SwipeJobs India – Screenshot 8"></a>
-
-</div>
-
-<sub>◀ Swipe horizontally to see more screenshots ▶</sub>
-
-</div>
-
+<sub>◀ Swipe / scroll horizontally to view more screenshots ▶</sub>
 ---
 
 ## ✨ Key Features
