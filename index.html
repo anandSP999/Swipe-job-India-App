@@ -3,345 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swipe Jobs India - App Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>SJI App Store Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0A192F;
-            --card-bg: #112240;
-            --primary-accent: #00E676; /* Vibrant Green */
-            --secondary-accent: #0066FF; /* Vibrant Blue */
-            --text-main: #E6F1FF;
-            --text-muted: #8892B0;
+            --bg-grad-top: #1A2436;
+            --bg-grad-bottom: #0B111E;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #FFFFFF;
+            --text-muted: #9BA3AF;
+            --accent-cyan: #00E5FF;
+            --accent-cyan-hover: #00B8CC;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg-color);
+            background: linear-gradient(180deg, var(--bg-grad-top) 0%, var(--bg-grad-bottom) 100%);
             color: var(--text-main);
-            overflow-x: hidden;
-        }
-
-        /* Navbar */
-        nav {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            background: rgba(10, 25, 47, 0.85);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: center;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo span { color: var(--primary-accent); }
-
-        .search-bar {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 30px;
-            width: 300px;
-            color: white;
-            outline: none;
-        }
-
-        /* Views */
-        .view-section { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease-in; }
-        .view-section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .hero h1 { font-size: 40px; margin-bottom: 15px; }
-        .hero p { color: var(--text-muted); font-size: 18px; }
-
-        /* App Grid */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .app-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .app-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.1);
-        }
-
-        .app-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .app-icon {
-            width: 60px; height: 60px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, var(--secondary-accent), var(--primary-accent));
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 24px;
-        }
-        
-        .app-title { font-size: 18px; font-weight: 600; }
-        .app-rating { color: #FFD700; font-size: 14px; margin-top: 5px; }
-        .app-desc-short { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 15px;}
-        
-        .btn-view {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
+        /* Mobile App Container Wrapper for PC */
+        .app-container {
             width: 100%;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        .app-card:hover .btn-view { background: var(--primary-accent); color: #000; }
-
-        /* App Details Screen */
-        .back-btn {
-            background: none; border: none; color: var(--primary-accent);
-            font-size: 16px; cursor: pointer; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 5px; font-weight: 600;
+            max-width: 480px; /* Mobile width */
+            background: #0F1724;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        .details-header { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; margin-bottom: 40px; }
-        .details-icon {
-            width: 120px; height: 120px; border-radius: 25px;
-            background: linear-gradient(135deg, var(--secondary-accent), var(--primary-accent));
-            display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold;
+        @media (min-width: 768px) {
+            body { padding: 20px; background: #05080F; }
+            .app-container { height: 90vh; border-radius: 40px; overflow-y: auto; border: 8px solid #1E293B; }
+            .app-container::-webkit-scrollbar { width: 0; } /* Hide scrollbar for clean look */
         }
+
+        header { padding: 20px 20px 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 24px; height: 24px; background: linear-gradient(135deg, #00E5FF, #0066FF); border-radius: 50%; }
+        .search-icon { width: 35px; height: 35px; background: var(--card-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 1px solid var(--card-border); }
+
+        .view { display: none; padding-bottom: 30px; animation: fade 0.3s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* Typography */
+        h1 { font-size: 32px; font-weight: 700; line-height: 1.2; padding: 0 20px; margin-top: 10px; margin-bottom: 20px; }
+        .section-title { font-size: 16px; font-weight: 600; margin: 25px 20px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .see-all { font-size: 13px; color: var(--accent-cyan); cursor: pointer; font-weight: 500; }
+
+        /* Buttons & Pills */
+        .pill-tabs { display: flex; gap: 10px; padding: 0 20px; margin-bottom: 20px; }
+        .pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+        .pill.active { background: var(--accent-cyan); color: #000; }
+        .pill.outline { background: transparent; border-color: var(--card-border); color: var(--text-main); }
         
-        .details-info h1 { font-size: 32px; margin-bottom: 10px; }
-        .btn-download {
-            background: var(--primary-accent); color: #000;
-            padding: 15px 40px; border-radius: 30px; border: none;
-            font-size: 18px; font-weight: 700; cursor: pointer;
-            margin-top: 15px; display: inline-block; text-decoration: none;
-            transition: 0.3s;
-        }
-        .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 230, 118, 0.4); }
+        .btn-install { background: var(--accent-cyan); color: #000; padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+        .btn-view { background: var(--card-bg); color: var(--text-main); padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 600; border: 1px solid var(--card-border); cursor: pointer; }
 
-        .screenshots-container {
-            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px;
-            scrollbar-width: thin; scrollbar-color: var(--primary-accent) var(--card-bg);
-        }
-        .screenshots-container::-webkit-scrollbar { height: 8px; }
-        .screenshots-container::-webkit-scrollbar-thumb { background: var(--primary-accent); border-radius: 10px; }
+        /* Horizontal Scroll Cards */
+        .featured-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px; scrollbar-width: none; }
+        .featured-scroll::-webkit-scrollbar { display: none; }
+        .feature-card { min-width: 130px; height: 160px; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(145deg, #1E293B, #0F172A); position: relative; overflow: hidden; }
+        .feature-icon { width: 50px; height: 50px; border-radius: 14px; background: #fff; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; color: #000; }
+        .feature-title { font-size: 14px; font-weight: 600; line-height: 1.2; }
+
+        /* List Items */
+        .app-list { display: flex; flex-direction: column; gap: 12px; padding: 0 20px; }
+        .list-item { display: flex; align-items: center; background: var(--card-bg); padding: 12px 15px; border-radius: 18px; border: 1px solid var(--card-border); cursor: pointer; }
+        .list-icon { width: 45px; height: 45px; border-radius: 12px; background: #2A364F; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; margin-right: 15px; }
+        .list-info { flex: 1; }
+        .list-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .stars { color: #F59E0B; font-size: 11px; letter-spacing: 2px; }
+
+        /* --- SCREEN 2: DETAILS --- */
+        .top-bar { padding: 20px; display: flex; align-items: center; gap: 15px; }
+        .back-btn { font-size: 20px; color: var(--text-main); cursor: pointer; text-decoration: none; }
         
-        .screenshot {
-            min-width: 250px; height: 450px; border-radius: 15px;
-            background: var(--card-bg); object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .details-hero { text-align: center; padding: 10px 20px; }
+        .details-icon-large { width: 100px; height: 100px; border-radius: 24px; background: linear-gradient(135deg, #2A364F, #1E293B); margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .details-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .details-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 5px; }
+        .details-rating { font-size: 13px; font-weight: 600; color: #F59E0B; margin-bottom: 20px; }
+        
+        .btn-large-download { display: block; width: calc(100% - 40px); margin: 0 auto; background: var(--accent-cyan); color: #000; text-align: center; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 8px 20px rgba(0, 229, 255, 0.2); }
+        
+        .platform-tags { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .ptag { font-size: 11px; padding: 4px 10px; border: 1px solid var(--card-border); border-radius: 12px; color: var(--text-muted); }
 
-        .features-list { margin-top: 40px; }
-        .features-list h3 { margin-bottom: 15px; font-size: 22px; color: var(--primary-accent); }
-        .features-list ul { list-style-position: inside; color: var(--text-muted); line-height: 1.8; }
+        .ss-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px; margin-top: 25px; scrollbar-width: none; }
+        .ss-scroll img { height: 220px; width: 120px; object-fit: cover; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); }
+        .features-text { padding: 20px; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 15px; }
-            .search-bar { width: 100%; }
-            .hero h1 { font-size: 28px; }
-            .details-header { flex-direction: column; text-align: center; }
-            .screenshot { min-width: 200px; height: 380px; }
-        }
+        /* --- SCREEN 3: SEARCH --- */
+        .search-container { padding: 0 20px; margin-bottom: 20px; }
+        .search-input-box { width: 100%; background: #fff; border-radius: 25px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
+        .search-input-box input { border: none; outline: none; background: transparent; width: 100%; font-size: 15px; color: #000; }
+        .filter-tags { display: flex; gap: 8px; overflow-x: auto; padding: 0 20px; margin-bottom: 20px; scrollbar-width: none; }
+        .filter-tag { background: var(--card-bg); border: 1px solid var(--card-border); padding: 6px 12px; border-radius: 15px; font-size: 12px; white-space: nowrap; }
+
+        .search-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
+        .grid-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 15px; position: relative; }
+        .grid-icon { width: 40px; height: 40px; border-radius: 10px; background: #2A364F; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-bottom: 10px; }
+        .grid-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .grid-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .grid-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .grid-rating { font-size: 12px; color: #F59E0B; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo"><span>SJI</span> App Store</div>
-        <input type="text" class="search-bar" placeholder="Search apps...">
-    </nav>
+<div class="app-container">
 
-    <!-- HOME SCREEN (APP LIST) -->
-    <main id="home-view" class="view-section active">
-        <div class="hero">
-            <h1>Discover Swipe Jobs India Solutions</h1>
-            <p>Empowering companies, teams, and candidates with next-gen platforms.</p>
-        </div>
+    <!-- SCREEN 1: HOME -->
+    <div id="view-home" class="view active">
+        <header>
+            <div class="logo"><div class="logo-icon"></div> Sphere</div>
+            <div class="search-icon" onclick="switchView('view-search')">🔍</div>
+        </header>
 
-        <div class="app-grid" id="app-grid">
-            <!-- Cards will be injected via JS -->
-        </div>
-    </main>
-
-    <!-- APP DETAILS SCREEN -->
-    <section id="details-view" class="view-section">
-        <button class="back-btn" onclick="showHome()">← Back to Apps</button>
+        <h1>Discover the Next<br>Era of Apps</h1>
         
-        <div class="details-header">
-            <div class="details-icon" id="detail-icon">SJI</div>
-            <div class="details-info">
-                <h1 id="detail-title">App Title</h1>
-                <div class="app-rating">★★★★★ 4.9 • Official App</div>
-                <p id="detail-desc" style="color: var(--text-muted); max-width: 600px; margin-top: 10px;"></p>
-                <a id="detail-download" href="#" class="btn-download">Download APK</a>
+        <div class="pill-tabs">
+            <div class="pill active">Explore</div>
+            <div class="pill outline">Trending</div>
+        </div>
+
+        <div class="featured-scroll">
+            <!-- Featured cards -->
+            <div class="feature-card" style="background: linear-gradient(145deg, #00E5FF, #0066FF);">
+                <div class="feature-icon" style="color:#0066FF">JP</div>
+                <div class="feature-title">Job Partner Suite</div>
+            </div>
+            <div class="feature-card" style="background: linear-gradient(145deg, #8B5CF6, #D946EF);">
+                <div class="feature-icon" style="color:#D946EF">SJI</div>
+                <div class="feature-title">Candidate App</div>
+            </div>
+            <div class="feature-card" style="background: linear-gradient(145deg, #F59E0B, #EF4444);">
+                <div class="feature-icon" style="color:#EF4444">PT</div>
+                <div class="feature-title">Team Manager</div>
             </div>
         </div>
 
-        <div class="features-list">
-            <h3>Screenshots</h3>
-            <div class="screenshots-container" id="detail-screenshots">
-                <!-- Screenshots injected here -->
-            </div>
+        <div class="section-title">
+            <span>Curated for You</span>
+            <span class="see-all" onclick="switchView('view-search')">See all</span>
+        </div>
+
+        <div class="app-list" id="home-app-list">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- SCREEN 2: DETAILS -->
+    <div id="view-details" class="view">
+        <div class="top-bar">
+            <div class="back-btn" onclick="switchView('view-home')">❮</div>
+        </div>
+        
+        <div class="details-hero">
+            <div class="details-icon-large" id="det-icon">M</div>
+            <div class="details-title" id="det-title">App Name</div>
+            <div class="details-sub" id="det-sub">Description</div>
+            <div class="details-rating">★ 4.8</div>
             
-            <h3 style="margin-top: 40px;">About this app</h3>
-            <ul id="detail-features">
-                <!-- Features injected here -->
-            </ul>
+            <a href="#" id="det-download" class="btn-large-download">Download Now</a>
+            
+            <div class="platform-tags">
+                <span class="ptag">Android APK</span>
+                <span class="ptag">Verified</span>
+            </div>
         </div>
-    </section>
 
-    <script>
-        // Data for the 3 Applications
-        const appsData = [
-            {
-                id: 1,
-                name: "SJI Partner Team",
-                shortDesc: "For internal team management, attendance, and salary details.",
-                iconText: "PT",
-                apkLink: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/SJI.Partner.Team.apk",
-                fullDesc: "Designed specifically for companies partnering with Swipe Jobs India. It allows management to seamlessly handle their employees' daily tasks.",
-                features: [
-                    "Assign work efficiently to team members",
-                    "Track daily attendance and working hours",
-                    "Manage salary details and payrolls",
-                    "Generate and manage offer letters",
-                    "Handle job leaves and job ending processes"
-                ],
-                // Yahan aap apne GitHub raw image links daal sakte hain
-                screenshots: [
-                    "https://placehold.co/250x450/112240/00E676?text=Team+Screen+1",
-                    "https://placehold.co/250x450/112240/00E676?text=Team+Screen+2"
-                ]
-            },
-            {
-                id: 2,
-                name: "Swipe Job India Partner",
-                shortDesc: "Recruitment portal for companies and agencies to post jobs.",
-                iconText: "JP",
-                apkLink: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/Swipe.Job.India.Partner.apk",
-                fullDesc: "The ultimate tool for hiring companies and recruitment agencies. Manage your hiring pipeline and teams effectively.",
-                features: [
-                    "Post new job requirements instantly",
-                    "Dedicated plans for recruitment agencies",
-                    "Manage multiple candidates easily",
-                    "Team member management capabilities"
-                ],
-                // Aapke GitHub link 2 ke images ke raw URLs yahan aayenge:
-                screenshots: [
-                    "https://placehold.co/250x450/112240/0066FF?text=Partner+App+1",
-                    "https://placehold.co/250x450/112240/0066FF?text=Partner+App+2",
-                    "https://placehold.co/250x450/112240/0066FF?text=Partner+App+3"
-                ]
-            },
-            {
-                id: 3,
-                name: "Swipe Jobs India",
-                shortDesc: "For candidates to find jobs, apply, and earn through referrals.",
-                iconText: "SJI",
-                apkLink: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/SwipeJobsIndia.apk",
-                fullDesc: "The core platform for job seekers. Create your profile, browse available job posts, and secure your future career.",
-                features: [
-                    "Create and manage professional candidate profiles",
-                    "View and apply to the latest job postings",
-                    "Refer and Earn: Make money by referring friends to jobs",
-                    "Real-time application status tracking"
-                ],
-                // Aapke GitHub link 3 ke images ke raw URLs yahan aayenge:
-                screenshots: [
-                    "https://placehold.co/250x450/112240/E6F1FF?text=Candidate+App+1",
-                    "https://placehold.co/250x450/112240/E6F1FF?text=Candidate+App+2",
-                    "https://placehold.co/250x450/112240/E6F1FF?text=Candidate+App+3"
-                ]
-            }
-        ];
+        <div class="section-title">Screenshots</div>
+        <div class="ss-scroll" id="det-ss">
+            <!-- Screenshots -->
+        </div>
 
-        // Render Home Page App Cards
-        const appGrid = document.getElementById('app-grid');
+        <div class="section-title">Features & What's New</div>
+        <div class="features-text" id="det-features">
+            <!-- Features injected here -->
+        </div>
+    </div>
+
+    <!-- SCREEN 3: SEARCH -->
+    <div id="view-search" class="view">
+        <div class="top-bar">
+            <div class="back-btn" onclick="switchView('view-home')">❮</div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-input-box">
+                <span style="color:#666;">🔍</span>
+                <input type="text" id="search-input" placeholder="Search for apps..." oninput="filterApps()">
+            </div>
+        </div>
+
+        <div class="filter-tags">
+            <div class="filter-tag">⊞ Categories ⌄</div>
+            <div class="filter-tag">₹ Pricing ⌄</div>
+            <div class="filter-tag">★ Ratings ⌄</div>
+            <div class="filter-tag">⚙ Filter</div>
+        </div>
+
+        <div class="search-grid" id="search-grid">
+            <!-- Search Results Injected via JS -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // SJI Data
+    const apps = [
+        {
+            id: 1,
+            name: "SJI Partner Team",
+            icon: "PT",
+            sub: "Team & Employee Management",
+            desc: "Track attendance, salary details, assign work, and manage offer letters for employees seamlessly.",
+            features: "• Attendance Tracking\n• Salary & Payroll Management\n• Work Assignment\n• Offer Letters & Leave Management",
+            link: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/SJI.Partner.Team.apk",
+            ss: ["https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-20-01-23-395_com.aistudio.swipejobs.india.jpg", "https://raw.githubusercontent.com/anandSP999/Swipe-job-India-App/refs/heads/main/Swipe%20job%20India%20-%20App/Screenshot_2026-10-19-19-54-48-862_com.aistudio.swipejobs.india-edit.jpg"]
+        },
+        {
+            id: 2,
+            name: "SJI Partner",
+            icon: "JP",
+            sub: "Job Posting & Recruitment",
+            desc: "For companies and agencies to post jobs, manage candidate pipelines, and handle hiring teams.",
+            features: "• Post Job Openings\n• Recruitment Agency Plans\n• Candidate Pipeline Tracking\n• Team Collaboration",
+            link: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/Swipe.Job.India.Partner.apk",
+            ss: ["https://placehold.co/120x220/1E293B/00E5FF?text=Recruit1", "https://placehold.co/120x220/1E293B/00E5FF?text=Recruit2", "https://placehold.co/120x220/1E293B/00E5FF?text=Recruit3"]
+        },
+        {
+            id: 3,
+            name: "Swipe Jobs India",
+            icon: "SJI",
+            sub: "Candidate Profile & Apply",
+            desc: "Create profiles, find jobs, apply instantly, and earn money through the Refer and Earn program.",
+            features: "• Create Candidate Profile\n• Job Search & Apply\n• Refer & Earn Program\n• Real-time Application Status",
+            link: "https://github.com/anandSP999/Swipe-job-India-App/releases/download/v1.0/SwipeJobsIndia.apk",
+            ss: ["https://placehold.co/120x220/1E293B/00E5FF?text=Job1", "https://placehold.co/120x220/1E293B/00E5FF?text=Job2"]
+        }
+    ];
+
+    function renderHome() {
+        const list = document.getElementById('home-app-list');
+        list.innerHTML = '';
+        apps.forEach(app => {
+            list.innerHTML += `
+                <div class="list-item" onclick="openDetails(${app.id})">
+                    <div class="list-icon" style="color:var(--accent-cyan)">${app.icon}</div>
+                    <div class="list-info">
+                        <div class="list-title">${app.name}</div>
+                        <div class="stars">★★★★★</div>
+                    </div>
+                    <button class="btn-install">Install</button>
+                </div>
+            `;
+        });
+    }
+
+    function renderSearch(query = "") {
+        const grid = document.getElementById('search-grid');
+        grid.innerHTML = '';
+        const filtered = apps.filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || a.desc.toLowerCase().includes(query.toLowerCase()));
         
-        appsData.forEach(app => {
-            const card = document.createElement('div');
-            card.className = 'app-card';
-            card.onclick = () => showDetails(app.id);
-            card.innerHTML = `
-                <div class="app-header">
-                    <div class="app-icon">${app.iconText}</div>
-                    <div>
-                        <div class="app-title">${app.name}</div>
-                        <div class="app-rating">★★★★★ 4.8</div>
+        filtered.forEach(app => {
+            grid.innerHTML += `
+                <div class="grid-card" onclick="openDetails(${app.id})">
+                    <div style="position:absolute; top:10px; right:10px; color:#F59E0B; font-size:12px;">★</div>
+                    <div class="grid-icon" style="color:var(--accent-cyan)">${app.icon}</div>
+                    <div class="grid-title">${app.name}</div>
+                    <div class="grid-desc">${app.desc}</div>
+                    <div class="grid-bottom">
+                        <span class="grid-rating">★ 4.8</span>
+                        <button class="btn-install" style="padding:4px 12px;">Install</button>
                     </div>
                 </div>
-                <p class="app-desc-short">${app.shortDesc}</p>
-                <button class="btn-view">View Details</button>
             `;
-            appGrid.appendChild(card);
+        });
+    }
+
+    function filterApps() {
+        const query = document.getElementById('search-input').value;
+        renderSearch(query);
+    }
+
+    function openDetails(id) {
+        const app = apps.find(a => a.id === id);
+        document.getElementById('det-title').innerText = app.name;
+        document.getElementById('det-sub').innerText = app.sub;
+        document.getElementById('det-icon').innerText = app.icon;
+        document.getElementById('det-download').href = app.link;
+        document.getElementById('det-features').innerText = app.features;
+        
+        const ssContainer = document.getElementById('det-ss');
+        ssContainer.innerHTML = '';
+        app.ss.forEach(img => {
+            ssContainer.innerHTML += `<img src="${img}" alt="Screenshot">`;
         });
 
-        // Navigation Functions
-        function showDetails(appId) {
-            const app = appsData.find(a => a.id === appId);
-            
-            document.getElementById('detail-title').innerText = app.name;
-            document.getElementById('detail-icon').innerText = app.iconText;
-            document.getElementById('detail-desc').innerText = app.fullDesc;
-            document.getElementById('detail-download').href = app.apkLink;
-            
-            // Render Features
-            const featuresList = document.getElementById('detail-features');
-            featuresList.innerHTML = '';
-            app.features.forEach(f => {
-                featuresList.innerHTML += `<li>${f}</li>`;
-            });
+        switchView('view-details');
+    }
 
-            // Render Screenshots
-            const screenshotsContainer = document.getElementById('detail-screenshots');
-            screenshotsContainer.innerHTML = '';
-            app.screenshots.forEach(src => {
-                screenshotsContainer.innerHTML += `<img src="${src}" class="screenshot" alt="Screenshot">`;
-            });
-
-            document.getElementById('home-view').classList.remove('active');
-            window.scrollTo(0, 0);
-            document.getElementById('details-view').classList.add('active');
+    function switchView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+        if(viewId === 'view-search') {
+            document.getElementById('search-input').value = '';
+            renderSearch();
         }
+        window.scrollTo(0, 0);
+    }
 
-        function showHome() {
-            document.getElementById('details-view').classList.remove('active');
-            document.getElementById('home-view').classList.add('active');
-        }
-    </script>
+    // Initialize
+    renderHome();
+    renderSearch();
+</script>
+
 </body>
-</html>
+    </html>
+    
